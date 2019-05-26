@@ -50,7 +50,6 @@ class App extends BaseComponent {
     event.preventDefault();
     const text = this.state.inputTask.text;
     if(text.trim() !== "") {
-      console.log(this.state.inputTask);
       await taskStore.addItem(this.state.inputTask);
       this.setState({ inputTask: { text: "", done: false } });
     }
@@ -78,7 +77,6 @@ class App extends BaseComponent {
       if(currentTask.trim() === "") {
         window.alert("edit task cannot empty");
       } else {
-        console.log(currentTask);
         await taskStore.editItem(task._id, {
           ...task,
           text: currentTask,
