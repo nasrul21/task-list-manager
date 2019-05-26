@@ -87,6 +87,18 @@ class App extends BaseComponent {
     }
   }
 
+  upload = async () => {
+    console.log('uploading...');
+    try {
+      await taskStore.upload();
+      console.log('upload done');
+    } catch (err) {
+      alert(err.message);
+      console.log('upload failed');
+      alert("upload failed");
+    }
+  }
+
   renderItem() {
     return taskStore.data.map((item) => (
         <li key={item._id} className={`${this.checkIsUploaded(item)} ${item.done ? 'checked' : ''}`}>
@@ -114,13 +126,13 @@ class App extends BaseComponent {
           <button type="submit" className="btn addBtn">Add</button>
         </form>
         <div className="info">
-          <span class="offline"  style={{marginLeft: "auto"}}>
-            Local
+          <span className="offline"  style={{marginLeft: "auto"}}>
+            Unuploaded
           </span>
-          <span class="online">
+          <span className="online">
             Uploaded
           </span>
-          <button className="btn blue" style={{marginLeft: "auto"}}>
+          <button className="btn blue" style={{marginLeft: "auto"}} onClick={() => this.upload()}>
             Upload ({taskStore.countUnuploadeds()})
           </button>
         </div>
