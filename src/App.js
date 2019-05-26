@@ -71,13 +71,29 @@ class App extends BaseComponent {
     await taskStore.deleteItem(id);
   }
 
+  editItem = async(task) => {
+    const currentTask = window.prompt("Edit Task", task.text);
+    
+    if(currentTask != null) {
+      if(currentTask.trim() === "") {
+        window.alert("edit task cannot empty");
+      } else {
+        console.log(currentTask);
+        await taskStore.editItem(task._id, {
+          ...task,
+          text: currentTask,
+        });
+      }
+    }
+  }
+
   renderItem() {
     return taskStore.data.map((item) => (
         <li key={item._id} className={`${this.checkIsUploaded(item)} ${item.done ? 'checked' : ''}`}>
           {item.text}
           <span className="action">
             <button className="btn green" onClick={() => this.updateTaskDone(item)}>Done</button>
-            <button className="btn blue">Edit</button>
+            <button className="btn blue" onClick={() => this.editItem(item)}>Edit</button>
             <button className="btn red" onClick={() => this.deleteItem(item._id)}>X</button>
           </span>
         </li>
@@ -97,7 +113,17 @@ class App extends BaseComponent {
             onChange={this.handleInput} />
           <button type="submit" className="btn addBtn">Add</button>
         </form>
-        
+        <div className="info">
+          <span class="offline"  style={{marginLeft: "auto"}}>
+            Local
+          </span>
+          <span class="online">
+            Uploaded
+          </span>
+          <button className="btn blue" style={{marginLeft: "auto"}}>
+            Upload ({taskStore.countUnuploadeds()})
+          </button>
+        </div>
         <ul>
           {this.renderItem()}
         </ul>
