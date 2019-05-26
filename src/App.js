@@ -67,6 +67,10 @@ class App extends BaseComponent {
     });
   }
 
+  deleteItem = async(id) => {
+    await taskStore.deleteItem(id);
+  }
+
   renderItem() {
     return taskStore.data.map((item) => (
         <li key={item._id} className={`${this.checkIsUploaded(item)} ${item.done ? 'checked' : ''}`}>
@@ -74,7 +78,7 @@ class App extends BaseComponent {
           <span className="action">
             <button className="btn green" onClick={() => this.updateTaskDone(item)}>Done</button>
             <button className="btn blue">Edit</button>
-            <button className="btn red">X</button>
+            <button className="btn red" onClick={() => this.deleteItem(item._id)}>X</button>
           </span>
         </li>
     ))
