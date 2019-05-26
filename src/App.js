@@ -56,9 +56,13 @@ class App extends BaseComponent {
     }
   }
 
+  checkIsUploaded = (taks) => {
+    return taskStore.checkIsUploaded(taks) ? "online" : "offline";
+  }
+
   renderItem() {
     return taskStore.data.map((item) => (
-        <li key={item._id} className={`online ${item.done ? 'checked' : ''}`}>
+        <li key={item._id} className={`${this.checkIsUploaded(item)} ${item.done ? 'checked' : ''}`}>
           {item.text}
           <span className="action">
             <button className="btn green">Done</button>
@@ -82,10 +86,10 @@ class App extends BaseComponent {
             onChange={this.handleInput} />
           <button type="submit" className="btn addBtn">Add</button>
         </form>
-
+        
         <ul>
           {this.renderItem()}
-        </ul> 
+        </ul>
       </div>
     );
   }
