@@ -1,9 +1,20 @@
-import React from 'react';
+import React, { PureComponent } from 'react';
+import taskStore from './taskStore';
 import './App.css';
 
-class App extends React.Component {
+class BaseComponent extends PureComponent {
+  rerender = () => {
+    this.setState({
+      _rerender: new Date(),
+    });
+  }
+}
+
+class App extends BaseComponent {
 
   state = {
+    initialize: false,
+    inputTask: { text: "", done: false },
     tasks: [
       { text: "Bangun", done: true },
       { text: "Sahur", done: true },
@@ -14,9 +25,48 @@ class App extends React.Component {
     ]
   }
 
+  inputElement = React.createRef();
+
+  async componentDidMount() {
+    taskStore.setName("efishery_tasks");
+    await taskStore.initialize();
+    this.setState({ initialize: true });
+    this.inputElement.current.focus();
+
+    this.unsubTask = taskStore.subscribe(this.rerender)
+  }
+
+  async componentDidUpdate() {
+    if(!taskStore.isInitialized) {
+      console.log('popup initialize all offline data...');
+      taskStore.setName("efishery_tasks");
+      await taskStore.initialize();
+      this.setState({ initialize: true });
+      console.log('popup done');
+    }
+  }
+
+  componentWillUnmount() {
+    this.unsubTask();
+  }
+
+  handleInput = (event) => {
+    this.setState({ inputTask: { text: event.target.value, done: false }});
+  }
+
+  addItem = async(event) => {
+    event.preventDefault();
+    const text = this.state.inputTask.text;
+    if(text.trim() !== "") {
+      console.log(this.state.inputTask);
+      await taskStore.addItem(this.state.inputTask);
+      this.setState({ inputTask: { text: "", done: false } });
+    }
+  }
+
   renderItem() {
-    return this.state.tasks.map((item) => (
-        <li className={`online ${item.done ? 'checked' : ''}`}>
+    return this.state.tasks.map((item, index) => (
+        <li key={index} className={`online ${item.done ? 'checked' : ''}`}>
           {item.text}
           <span className="action">
             <button className="btn green">Done</button>
@@ -30,9 +80,14 @@ class App extends React.Component {
   render() {
     return (
       <div className="App">      
-        <form className="header">
+        <form className="header" onSubmit={this.addItem}>
           <h2>Task List Manager</h2>
-          <input type="text" id="myInput" placeholder="Title..." />
+          <input 
+            type="text" 
+            placeholder="Title..." 
+            ref={this.inputElement}
+            value={this.state.inputTask.text} 
+            onChange={this.handleInput} />
           <button type="submit" className="btn addBtn">Add</button>
         </form>
 
