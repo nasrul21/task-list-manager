@@ -60,12 +60,19 @@ class App extends BaseComponent {
     return taskStore.checkIsUploaded(taks) ? "online" : "offline";
   }
 
+  updateTaskDone = async(task) => {
+    await taskStore.editItem(task._id, {
+      ...task,
+      done: !task.done
+    });
+  }
+
   renderItem() {
     return taskStore.data.map((item) => (
         <li key={item._id} className={`${this.checkIsUploaded(item)} ${item.done ? 'checked' : ''}`}>
           {item.text}
           <span className="action">
-            <button className="btn green">Done</button>
+            <button className="btn green" onClick={() => this.updateTaskDone(item)}>Done</button>
             <button className="btn blue">Edit</button>
             <button className="btn red">X</button>
           </span>
