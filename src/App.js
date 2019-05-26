@@ -15,14 +15,6 @@ class App extends BaseComponent {
   state = {
     initialize: false,
     inputTask: { text: "", done: false },
-    tasks: [
-      { text: "Bangun", done: true },
-      { text: "Sahur", done: true },
-      { text: "Masak", done: false },
-      { text: "Makan", done: false },
-      { text: "Beres-beres", done: false },
-      { text: "Ibadah", done: false }
-    ]
   }
 
   inputElement = React.createRef();
@@ -65,8 +57,8 @@ class App extends BaseComponent {
   }
 
   renderItem() {
-    return this.state.tasks.map((item, index) => (
-        <li key={index} className={`online ${item.done ? 'checked' : ''}`}>
+    return taskStore.data.map((item) => (
+        <li key={item._id} className={`online ${item.done ? 'checked' : ''}`}>
           {item.text}
           <span className="action">
             <button className="btn green">Done</button>
