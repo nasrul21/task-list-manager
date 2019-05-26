@@ -16,13 +16,7 @@ class App extends React.Component {
 
   renderItem() {
     return this.state.tasks.map((item) => (
-        // <li className={item.done ? "checked" : ""}>
-        //   <span className="item-content">{item.text}</span>
-        //   <span className="item-action">
-        //     <button className="btn green">Done</button>
-        //   </span>
-        // </li>
-        <li className={"online ${item.done ? 'checked' : ''}"}>
+        <li className={`online ${item.done ? 'checked' : ''}`}>
           {item.text}
           <span className="action">
             <button className="btn green">Done</button>
