@@ -32,6 +32,11 @@ ul li.checked {
   text-decoration: line-through;
 }
 
+ul li.checked small {
+  display: inline-block;
+  text-decoration: none !important;
+}
+
 ul li.online::before {
   content: '';
   position: absolute;

@@ -1,6 +1,10 @@
 import React, { PureComponent } from 'react';
 import taskStore from './taskStore';
-import './App.css';
+import dateFormat from './dateFormat';
+import './App.css'; 
+
+window.taskStore = taskStore;
+window.dateFormat = dateFormat(new Date());
 
 class BaseComponent extends PureComponent {
   rerender = () => {
@@ -101,6 +105,8 @@ class App extends BaseComponent {
     return taskStore.data.map((item) => (
         <li key={item._id} className={`${this.checkIsUploaded(item)} ${item.done ? 'checked' : ''}`}>
           {item.text}
+          <br />
+          <small style={{fontSize: 12}}>{dateFormat(Date.parse(item.createdAt))}</small>
           <span className="action">
             <button className="btn green" onClick={() => this.updateTaskDone(item)}>Done</button>
             <button className="btn blue" onClick={() => this.editItem(item)}>Edit</button>
