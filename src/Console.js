@@ -1,32 +1,36 @@
-const pouchdb = require('pouchdb');
 const inquirer = require('inquirer');
+const taskStore = require('./taskStoreNode');
 
-const db = new pouchdb("http://admin:iniadmin@13.250.43.79:5984/efishery_tasks");
-var tasks = [];
+async function initialize() {
+    console.log('popup initialize all offline data...');
+    taskStore.setName("efishery_tasks");
+    await taskStore.initialize();
+    console.log('popup done');
+}
+
+initialize().then(function() {
+    showTasks();
+});
 
 // Show All Task
-db.allDocs({include_docs: true}).then(function(result) {
-    tasks = result.rows.reduce(function(res, item) {
-        if(item.doc.deletedAt == null) {
-            res.push(item.doc);
-        }
-        return res;
-    }, []);
-    
-    inquirer.prompt([
-        {
-            type: 'list',
-            name: 'tasks',
-            message: 'Select task',
-            choices: tasks.map(function(item) { 
-                const { _id, text, done} = item
-                return JSON.stringify({ _id, text, done }) 
-            })
-        }
-    ]).then(answers => {
-        console.log(answers.tasks);
-    });
-    
-}, function(error) {
-    console.log(error);
-});
+function showTasks() {
+        inquirer.prompt([
+            {
+                type: 'list',
+                name: 'tasks',
+                message: 'Select task',
+                choices: [...taskStore.data.map(function(item, index) { 
+                    const { _id, text, done} = item
+                    return `${index + 1}. ${taskStore.checkIsUploaded(item) ? "(on )" : "(off)"} | ` + JSON.stringify({ _id, text, done }) 
+                }), new inquirer.Separator()]
+            }
+        ]).then(answers => {
+            console.log(getResult(answers.tasks));
+            process.exit();
+        });
+}
+
+function getResult(result) {
+    const [_, obj] = result.split("|");
+    return JSON.parse(obj);
+}
