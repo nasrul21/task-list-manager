@@ -21,3 +21,7 @@
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+# db local console
+meta_efishery_tasks
+efishery_tasks
