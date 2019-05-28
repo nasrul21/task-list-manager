@@ -66,15 +66,15 @@ function showTasks() {
             switch (answers.action) {
                 case ACTION.DONE: {
                     console.log("ACTION: DONE");
-                    return updateTaskDone(task);
+                    return updateTaskDone(task).then(showLastMenu);
                 }
                 case ACTION.EDIT: {
                     console.log("ACTION: EDIT");
-                    return editTask(task, answers.edit);
+                    return editTask(task, answers.edit).then(showLastMenu);
                 }
                 case ACTION.DELETE: {
                     console.log("ACTION: DELETE");
-                    return deleteTask(task._id);
+                    return deleteTask(task._id).then(showLastMenu);
                 }
                 default:
                     console.log("DEFAULT");
@@ -106,4 +106,32 @@ async function editTask(task, newText) {
 async function deleteTask(id) {
     await taskStore.deleteItem(id);
     console.log(`SUCCESS: Tasks with id '${id}' deleted!`);
+}
+
+function showLastMenu() {
+    inquirer.prompt([
+        {
+            type: 'list',
+            name: 'lastmenu',
+            message: 'Action Completed',
+            choices: ['Upload', 'Exit']
+        },
+    ]).then(answer => {
+        if(answer.lastmenu == "Upload") {
+            return uploadTask();
+        } else {
+            return process.exit();
+        }
+    });
+}
+
+async function uploadTask() {
+    console.log('uploading...');
+    try {
+    await taskStore.upload();
+        console.log('upload done');
+        process.exit();
+    } catch (err) {
+        console.log('upload failed');
+    }
 }
