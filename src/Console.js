@@ -46,13 +46,28 @@ function showTasks() {
                     const isDone = getResult(a.tasks).done;
                     return Object.values(ACTION).filter(function(item) { return isDone ? item != ACTION.DONE : item })
                 },
+            },
+            {
+                type: 'input',
+                name: 'edit',
+                message: function(a) { return `edit tasks '${getResult(a.tasks).text}':`; },
+                when: function(a) { 
+                    return a.action == ACTION.EDIT;
+                },
+                validate: function(input) {
+                    return input.trim() !== "";
+                }
             }
         ]).then(answers => {
             const task = getResult(answers.tasks);
             switch (answers.action) {
                 case ACTION.DONE: {
-                    console.log("DONE");
+                    console.log("ACTION: DONE");
                     return updateTaskDone(task);
+                }
+                case ACTION.EDIT: {
+                    console.log("ACTION: EDIT");
+                    return editTask(task, answers.edit);
                 }
                 default:
                     console.log("DEFAULT");
@@ -69,4 +84,13 @@ async function updateTaskDone(task) {
         done: !task.done
     });
     console.log(`SUCCESS: Tasks '${task.text}' done!`);
+}
+
+// edit task name
+async function editTask(task, newText) {
+    await taskStore.editItem(task._id, {
+        ...task,
+        text: newText,
+    });
+    console.log(`SUCCESS: Tasks '${newText}' updated!`);
 }
