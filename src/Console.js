@@ -1,6 +1,8 @@
 const inquirer = require('inquirer');
 const taskStore = require('./taskStoreNode');
 
+var tasks = [];
+
 // action key
 const ACTION = {
     DONE: "is done",
@@ -27,15 +29,16 @@ function getResult(result) {
 
 // Show All Task
 function showTasks() {
+        tasks = taskStore.data.map(function(item, index) { 
+            const { _id, text, done} = item
+            return `${index + 1}. ${taskStore.checkIsUploaded(item) ? "(on )" : "(off)"} | ` + JSON.stringify({ _id, text, done }) 
+        });
         inquirer.prompt([
             {
                 type: 'list',
                 name: 'tasks',
                 message: 'Select task',
-                choices: [...taskStore.data.map(function(item, index) { 
-                    const { _id, text, done} = item
-                    return `${index + 1}. ${taskStore.checkIsUploaded(item) ? "(on )" : "(off)"} | ` + JSON.stringify({ _id, text, done }) 
-                }), new inquirer.Separator()]
+                choices: [...tasks, new inquirer.Separator()]
             },
             {
                 type: 'list',
@@ -69,6 +72,10 @@ function showTasks() {
                     console.log("ACTION: EDIT");
                     return editTask(task, answers.edit);
                 }
+                case ACTION.DELETE: {
+                    console.log("ACTION: DELETE");
+                    return deleteTask(task._id);
+                }
                 default:
                     console.log("DEFAULT");
                 break;
@@ -93,4 +100,10 @@ async function editTask(task, newText) {
         text: newText,
     });
     console.log(`SUCCESS: Tasks '${newText}' updated!`);
+}
+
+// delete task
+async function deleteTask(id) {
+    await taskStore.deleteItem(id);
+    console.log(`SUCCESS: Tasks with id '${id}' deleted!`);
 }
